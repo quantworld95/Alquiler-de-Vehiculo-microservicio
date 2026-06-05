@@ -1,0 +1,214 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum VehiculoEstado {
+  DISPONIBLE
+  RESERVADO
+  ALQUILADO
+  MANTENIMIENTO
+  INACTIVO
+}
+
+enum ReservaEstado {
+  PENDIENTE
+  CONFIRMADA
+  LISTA_PARA_ENTREGA
+  CANCELADA
+  VENCIDA
+}
+
+enum AlquilerEstado {
+  PENDIENTE_ENTREGA
+  EN_CURSO
+  FINALIZADO
+  OBSERVADO
+  CANCELADO
+}
+
+enum NotificacionEstado {
+  PENDIENTE
+  ENVIADA
+  LEIDA
+}
+
+enum FirmaContratoEstado {
+  PENDIENTE_FIRMA
+  FIRMADO
+  ESCALADO_ADMIN
+}
+
+enum CargoAdicionalEstado {
+  PENDIENTE_FACTURACION
+  FACTURADO
+  ANULADO
+}
+
+model CategoriaVehiculo {
+  id          Int        @id @default(autoincrement()) @map("id_categoria")
+  nombre      String     @unique
+  descripcion String?
+  activo      Boolean    @default(true)
+  vehiculos   Vehiculo[]
+  createdAt   DateTime   @default(now()) @map("fecha_creacion")
+  updatedAt   DateTime   @updatedAt @map("fecha_actualizacion")
+
+  @@map("categorias_vehiculo")
+}
+
+model Vehiculo {
+  id          Int              @id @default(autoincrement()) @map("id_vehiculo")
+  placa       String           @unique
+  marca       String
+  modelo      String
+  anio        Int
+  color       String
+  imagenUrl   String?          @map("imagen_url")
+  precioDia   Decimal          @map("precio_dia") @db.Decimal(10, 2)
+  estado      VehiculoEstado   @default(DISPONIBLE)
+  categoriaId Int              @map("id_categoria")
+  categoria   CategoriaVehiculo @relation(fields: [categoriaId], references: [id])
+  reservas    Reserva[]
+  alquileres  Alquiler[]
+  createdAt   DateTime         @default(now()) @map("fecha_creacion")
+  updatedAt   DateTime         @updatedAt @map("fecha_actualizacion")
+
+  @@index([estado])
+  @@index([categoriaId, estado])
+  @@map("vehiculos")
+}
+
+model PuntoEntrega {
+  id                     Int       @id @default(autoincrement()) @map("id_punto_entrega")
+  nombre                 String
+  tipo                   String
+  direccion              String
+  ciudad                 String
+  estado                 String    @default("ACTIVO")
+  reservasComoRecogida   Reserva[] @relation("ReservaPuntoRecogida")
+  reservasComoDevolucion Reserva[] @relation("ReservaPuntoDevolucion")
+  createdAt              DateTime  @default(now()) @map("fecha_creacion")
+  updatedAt              DateTime  @updatedAt @map("fecha_actualizacion")
+
+  @@index([ciudad, estado])
+  @@map("puntos_entrega")
+}
+
+model Reserva {
+  id                    Int                  @id @default(autoincrement()) @map("id_reserva")
+  clienteId             Int                  @map("cliente_id")
+  vehiculoId            Int                  @map("id_vehiculo")
+  pagoId                Int?                 @map("pago_id")
+  facturaComprobanteId  String?              @map("factura_comprobante_id")
+  contratoDocumentoId   String?              @map("contrato_documento_id")
+  puntoRecogidaId       Int                  @map("id_punto_recogida")
+  puntoDevolucionId     Int                  @map("id_punto_devolucion")
+  fechaInicio           DateTime             @map("fecha_inicio")
+  fechaFin              DateTime             @map("fecha_fin")
+  estado                ReservaEstado        @default(PENDIENTE)
+  firmaContratoEstado   FirmaContratoEstado  @default(PENDIENTE_FIRMA) @map("estado_firma_contrato")
+  fechaFirmaContrato    DateTime?            @map("fecha_firma_contrato")
+  montoBase             Decimal              @map("monto_base") @db.Decimal(10, 2)
+  vehiculo              Vehiculo             @relation(fields: [vehiculoId], references: [id])
+  puntoRecogida         PuntoEntrega         @relation("ReservaPuntoRecogida", fields: [puntoRecogidaId], references: [id])
+  puntoDevolucion       PuntoEntrega         @relation("ReservaPuntoDevolucion", fields: [puntoDevolucionId], references: [id])
+  alquiler              Alquiler?
+  notificaciones        Notificacion[]
+  createdAt             DateTime             @default(now()) @map("fecha_creacion")
+  updatedAt             DateTime             @updatedAt @map("fecha_actualizacion")
+
+  @@index([clienteId])
+  @@index([estado])
+  @@index([firmaContratoEstado])
+  @@index([pagoId])
+  @@index([contratoDocumentoId])
+  @@index([vehiculoId, fechaInicio, fechaFin])
+  @@map("reservas")
+}
+
+model Alquiler {
+  id                         Int               @id @default(autoincrement()) @map("id_alquiler")
+  reservaId                  Int               @unique @map("id_reserva")
+  vehiculoId                 Int               @map("id_vehiculo")
+  fechaEntregaProgramada     DateTime          @map("fecha_entrega_programada")
+  fechaDevolucionProgramada  DateTime          @map("fecha_devolucion_programada")
+  fechaEntregaReal           DateTime?         @map("fecha_entrega_real")
+  fechaDevolucionReal        DateTime?         @map("fecha_devolucion_real")
+  kilometrajeSalida          Int?              @map("kilometraje_salida")
+  kilometrajeRetorno         Int?              @map("kilometraje_retorno")
+  combustibleSalida          String?           @map("combustible_salida")
+  combustibleRetorno         String?           @map("combustible_retorno")
+  estadoVehiculoEntrega      String?           @map("estado_vehiculo_entrega")
+  estadoVehiculoDevolucion   String?           @map("estado_vehiculo_devolucion")
+  danios                     String?
+  incidencias                String?
+  cargosAdicionalesTotal     Decimal           @default(0) @map("cargos_adicionales_total") @db.Decimal(10, 2)
+  estado                     AlquilerEstado    @default(PENDIENTE_ENTREGA)
+  reserva                    Reserva           @relation(fields: [reservaId], references: [id])
+  vehiculo                   Vehiculo          @relation(fields: [vehiculoId], references: [id])
+  cargosAdicionales          CargoAdicional[]
+  notificaciones             Notificacion[]
+  createdAt                  DateTime          @default(now()) @map("fecha_creacion")
+  updatedAt                  DateTime          @updatedAt @map("fecha_actualizacion")
+
+  @@index([estado])
+  @@index([vehiculoId, estado])
+  @@index([fechaDevolucionProgramada, estado])
+  @@map("alquileres")
+}
+
+model CargoAdicional {
+  id          Int                   @id @default(autoincrement()) @map("id_cargo_adicional")
+  alquilerId  Int                   @map("id_alquiler")
+  tipo        String
+  descripcion String
+  monto       Decimal               @db.Decimal(10, 2)
+  estado      CargoAdicionalEstado  @default(PENDIENTE_FACTURACION)
+  pagoId      Int?                  @map("pago_id")
+  alquiler    Alquiler              @relation(fields: [alquilerId], references: [id])
+  createdAt   DateTime              @default(now()) @map("fecha_creacion")
+  updatedAt   DateTime              @updatedAt @map("fecha_actualizacion")
+
+  @@index([alquilerId])
+  @@index([estado])
+  @@index([pagoId])
+  @@map("cargos_adicionales")
+}
+
+model Notificacion {
+  id          Int                 @id @default(autoincrement()) @map("id_notificacion")
+  usuarioId   Int?                @map("usuario_id")
+  reservaId   Int?                @map("id_reserva")
+  alquilerId  Int?                @map("id_alquiler")
+  tipo        String
+  mensaje     String
+  canal       String
+  estado      NotificacionEstado  @default(PENDIENTE)
+  fechaEnvio  DateTime?           @map("fecha_envio")
+  fechaLectura DateTime?          @map("fecha_lectura")
+  reserva     Reserva?            @relation(fields: [reservaId], references: [id])
+  alquiler    Alquiler?           @relation(fields: [alquilerId], references: [id])
+  createdAt   DateTime            @default(now()) @map("fecha_creacion")
+  updatedAt   DateTime            @updatedAt @map("fecha_actualizacion")
+
+  @@index([usuarioId, estado])
+  @@index([reservaId])
+  @@index([alquilerId])
+  @@index([estado])
+  @@map("notificaciones")
+}
+
+model Reporte {
+  id              Int      @id @default(autoincrement()) @map("id_reporte")
+  tipoReporte     String   @map("tipo_reporte")
+  fechaGeneracion DateTime @default(now()) @map("fecha_generacion")
+  descripcion     String?
+  datosResumen    Json     @map("datos_resumen")
+
+  @@index([tipoReporte, fechaGeneracion])
+  @@map("reportes")
+}

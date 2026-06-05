@@ -1,0 +1,455 @@
+{
+  "info": {
+    "_postman_id": "1b65e4cc-5f1b-4fd3-8f77-2f3f1f7a9c01",
+    "name": "MS Alquiler Vehiculos - Catalogos GraphQL",
+    "description": "Coleccion GraphQL para probar health, categorias, vehiculos y puntos de entrega del MS Alquiler de Vehiculos.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "categoriaId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "vehiculoId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "puntoEntregaId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { health { service status timestamp } }\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Categorias",
+      "item": [
+        {
+          "name": "Crear Categoria",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation CrearCategoria($input: CrearCategoriaInput!) { crearCategoriaVehiculo(input: $input) { id nombre descripcion activo createdAt updatedAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"nombre\": \"SUV\",\n      \"descripcion\": \"Vehiculos deportivos utilitarios\",\n      \"activo\": true\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Categorias",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { categoriasVehiculo { id nombre descripcion activo createdAt updatedAt } }\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Consultar Categoria por ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query Categoria($id: Int!) { categoriaVehiculo(id: $id) { id nombre descripcion activo createdAt updatedAt } }\",\n  \"variables\": {\n    \"id\": {{categoriaId}}\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Categoria",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation ActualizarCategoria($id: Int!, $input: ActualizarCategoriaInput!) { actualizarCategoriaVehiculo(id: $id, input: $input) { id nombre descripcion activo createdAt updatedAt } }\",\n  \"variables\": {\n    \"id\": {{categoriaId}},\n    \"input\": {\n      \"descripcion\": \"SUV familiares y ejecutivos\",\n      \"activo\": true\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Vehiculos",
+      "item": [
+        {
+          "name": "Crear Vehiculo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation CrearVehiculo($input: CrearVehiculoInput!) { crearVehiculo(input: $input) { id placa marca modelo anio color imagenUrl precioDia estado categoriaId createdAt updatedAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"placa\": \"ABC-1234\",\n      \"marca\": \"Toyota\",\n      \"modelo\": \"RAV4\",\n      \"anio\": 2024,\n      \"color\": \"Blanco\",\n      \"imagenUrl\": \"https://example.com/vehiculos/toyota-rav4.jpg\",\n      \"precioDia\": 85.5,\n      \"estado\": \"DISPONIBLE\",\n      \"categoriaId\": {{categoriaId}}\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Vehiculos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { vehiculos { id placa marca modelo anio color imagenUrl precioDia estado categoriaId createdAt updatedAt } }\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Consultar Vehiculo por ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query Vehiculo($id: Int!) { vehiculo(id: $id) { id placa marca modelo anio color imagenUrl precioDia estado categoriaId createdAt updatedAt } }\",\n  \"variables\": {\n    \"id\": {{vehiculoId}}\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Vehiculo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation ActualizarVehiculo($id: Int!, $input: ActualizarVehiculoInput!) { actualizarVehiculo(id: $id, input: $input) { id placa marca modelo anio color imagenUrl precioDia estado categoriaId createdAt updatedAt } }\",\n  \"variables\": {\n    \"id\": {{vehiculoId}},\n    \"input\": {\n      \"color\": \"Gris\",\n      \"imagenUrl\": \"https://example.com/vehiculos/toyota-rav4-gris.jpg\",\n      \"precioDia\": 90,\n      \"estado\": \"DISPONIBLE\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Puntos de Entrega",
+      "item": [
+        {
+          "name": "Crear Punto de Entrega",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation CrearPunto($input: CrearPuntoEntregaInput!) { crearPuntoEntrega(input: $input) { id nombre tipo direccion ciudad estado createdAt updatedAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"nombre\": \"Sucursal Centro\",\n      \"tipo\": \"SUCURSAL\",\n      \"direccion\": \"Av. Principal 123\",\n      \"ciudad\": \"Santa Cruz\",\n      \"estado\": \"ACTIVO\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Puntos de Entrega",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { puntosEntrega { id nombre tipo direccion ciudad estado createdAt updatedAt } }\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Consultar Punto de Entrega por ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query PuntoEntrega($id: Int!) { puntoEntrega(id: $id) { id nombre tipo direccion ciudad estado createdAt updatedAt } }\",\n  \"variables\": {\n    \"id\": {{puntoEntregaId}}\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Punto de Entrega",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation ActualizarPunto($id: Int!, $input: ActualizarPuntoEntregaInput!) { actualizarPuntoEntrega(id: $id, input: $input) { id nombre tipo direccion ciudad estado createdAt updatedAt } }\",\n  \"variables\": {\n    \"id\": {{puntoEntregaId}},\n    \"input\": {\n      \"direccion\": \"Av. Principal 123, Edificio Central\",\n      \"estado\": \"ACTIVO\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,184 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input ActualizarCategoriaInput {
+  activo: Boolean
+  descripcion: String
+  nombre: String
+}
+
+input ActualizarPuntoEntregaInput {
+  ciudad: String
+  direccion: String
+  estado: String
+  nombre: String
+  tipo: String
+}
+
+input ActualizarVehiculoInput {
+  anio: Int
+  categoriaId: Int
+  color: String
+  estado: VehiculoEstado
+  imagenUrl: String
+  marca: String
+  modelo: String
+  placa: String
+  precioDia: Float
+}
+
+input BuscarVehiculosDisponiblesInput {
+  categoriaId: Int
+  fechaFin: DateTime!
+  fechaInicio: DateTime!
+  puntoDevolucionId: Int!
+  puntoRecogidaId: Int!
+}
+
+type CategoriaType {
+  activo: Boolean!
+  createdAt: DateTime!
+  descripcion: String
+  id: Int!
+  nombre: String!
+  updatedAt: DateTime!
+}
+
+input CrearCategoriaInput {
+  activo: Boolean
+  descripcion: String
+  nombre: String!
+}
+
+input CrearPuntoEntregaInput {
+  ciudad: String!
+  direccion: String!
+  estado: String
+  nombre: String!
+  tipo: String!
+}
+
+input CrearReservaInput {
+  clienteId: Int!
+  fechaFin: DateTime!
+  fechaInicio: DateTime!
+  puntoDevolucionId: Int!
+  puntoRecogidaId: Int!
+  vehiculoId: Int!
+}
+
+input CrearVehiculoInput {
+  anio: Int!
+  categoriaId: Int!
+  color: String!
+  estado: VehiculoEstado
+  imagenUrl: String
+  marca: String!
+  modelo: String!
+  placa: String!
+  precioDia: Float!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+enum FirmaContratoEstado {
+  ESCALADO_ADMIN
+  FIRMADO
+  PENDIENTE_FIRMA
+}
+
+type HealthStatus {
+  service: String!
+  status: String!
+  timestamp: DateTime!
+}
+
+type Mutation {
+  actualizarCategoriaVehiculo(id: Int!, input: ActualizarCategoriaInput!): CategoriaType!
+  actualizarPuntoEntrega(id: Int!, input: ActualizarPuntoEntregaInput!): PuntoEntregaType!
+  actualizarVehiculo(id: Int!, input: ActualizarVehiculoInput!): VehiculoType!
+  crearCategoriaVehiculo(input: CrearCategoriaInput!): CategoriaType!
+  crearPuntoEntrega(input: CrearPuntoEntregaInput!): PuntoEntregaType!
+  crearReserva(input: CrearReservaInput!): ReservaType!
+  crearVehiculo(input: CrearVehiculoInput!): VehiculoType!
+}
+
+type PuntoEntregaType {
+  ciudad: String!
+  createdAt: DateTime!
+  direccion: String!
+  estado: String!
+  id: Int!
+  nombre: String!
+  tipo: String!
+  updatedAt: DateTime!
+}
+
+type Query {
+  categoriaVehiculo(id: Int!): CategoriaType!
+  categoriasVehiculo: [CategoriaType!]!
+
+  """Returns the current status of the MS Alquiler de Vehiculos service."""
+  health: HealthStatus!
+  puntoEntrega(id: Int!): PuntoEntregaType!
+  puntosEntrega: [PuntoEntregaType!]!
+  reserva(id: Int!): ReservaType!
+  reservasPorCliente(clienteId: Int!): [ReservaType!]!
+  vehiculo(id: Int!): VehiculoType!
+  vehiculos: [VehiculoType!]!
+  vehiculosDisponibles(input: BuscarVehiculosDisponiblesInput!): [VehiculoType!]!
+}
+
+enum ReservaEstado {
+  CANCELADA
+  CONFIRMADA
+  LISTA_PARA_ENTREGA
+  PENDIENTE
+  VENCIDA
+}
+
+type ReservaType {
+  clienteId: Int!
+  contratoDocumentoId: String
+  createdAt: DateTime!
+  estado: ReservaEstado!
+  facturaComprobanteId: String
+  fechaFin: DateTime!
+  fechaFirmaContrato: DateTime
+  fechaInicio: DateTime!
+  firmaContratoEstado: FirmaContratoEstado!
+  id: Int!
+  montoBase: Float!
+  pagoId: Int
+  puntoDevolucionId: Int!
+  puntoRecogidaId: Int!
+  updatedAt: DateTime!
+  vehiculoId: Int!
+}
+
+enum VehiculoEstado {
+  ALQUILADO
+  DISPONIBLE
+  INACTIVO
+  MANTENIMIENTO
+  RESERVADO
+}
+
+type VehiculoType {
+  anio: Int!
+  categoriaId: Int!
+  color: String!
+  createdAt: DateTime!
+  estado: VehiculoEstado!
+  id: Int!
+  imagenUrl: String
+  marca: String!
+  modelo: String!
+  placa: String!
+  precioDia: Float!
+  updatedAt: DateTime!
+}
