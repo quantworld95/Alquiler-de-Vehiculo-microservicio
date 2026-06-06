@@ -28,12 +28,50 @@ input ActualizarVehiculoInput {
   precioDia: Float
 }
 
+enum AlquilerEstado {
+  CANCELADO
+  EN_CURSO
+  FINALIZADO
+  OBSERVADO
+  PENDIENTE_ENTREGA
+}
+
+type AlquilerType {
+  cargosAdicionalesTotal: Float!
+  combustibleRetorno: String
+  combustibleSalida: String
+  createdAt: DateTime!
+  danios: String
+  estado: AlquilerEstado!
+  estadoVehiculoDevolucion: String
+  estadoVehiculoEntrega: String
+  fechaDevolucionProgramada: DateTime!
+  fechaDevolucionReal: DateTime
+  fechaEntregaProgramada: DateTime!
+  fechaEntregaReal: DateTime
+  id: Int!
+  incidencias: String
+  kilometrajeRetorno: Int
+  kilometrajeSalida: Int
+  reservaId: Int!
+  updatedAt: DateTime!
+  vehiculoId: Int!
+}
+
 input BuscarVehiculosDisponiblesInput {
   categoriaId: Int
   fechaFin: DateTime!
   fechaInicio: DateTime!
   puntoDevolucionId: Int!
   puntoRecogidaId: Int!
+}
+
+enum CapturaDocumentalTipo {
+  DOCUMENTO_ANVERSO
+  DOCUMENTO_REVERSO
+  LICENCIA_ANVERSO
+  LICENCIA_REVERSO
+  SELFIE_ROSTRO
 }
 
 type CategoriaType {
@@ -43,6 +81,36 @@ type CategoriaType {
   id: Int!
   nombre: String!
   updatedAt: DateTime!
+}
+
+type CheckoutReservaType {
+  camposPerfilFaltantes: [String!]!
+  capturasRequeridas: [CapturaDocumentalTipo!]!
+  clienteId: Int!
+  diasAlquiler: Int!
+  documentalUploadUrl: String
+  estadoValidacionDocumental: String
+  fechaFin: DateTime!
+  fechaInicio: DateTime!
+  montoBase: Float!
+  motivoBloqueo: MotivoBloqueoCheckout
+  puedeContinuarPago: Boolean!
+  puntoDevolucionId: Int!
+  puntoRecogidaId: Int!
+  requiereCapturaDocumental: Boolean!
+  validacionIaId: Int
+  vehiculoId: Int!
+}
+
+input ConfirmarReservaPagoInput {
+  clienteId: Int!
+  facturaComprobanteId: String!
+  fechaFin: DateTime!
+  fechaInicio: DateTime!
+  pagoId: Int!
+  puntoDevolucionId: Int!
+  puntoRecogidaId: Int!
+  vehiculoId: Int!
 }
 
 input CrearCategoriaInput {
@@ -57,15 +125,6 @@ input CrearPuntoEntregaInput {
   estado: String
   nombre: String!
   tipo: String!
-}
-
-input CrearReservaInput {
-  clienteId: Int!
-  fechaFin: DateTime!
-  fechaInicio: DateTime!
-  puntoDevolucionId: Int!
-  puntoRecogidaId: Int!
-  vehiculoId: Int!
 }
 
 input CrearVehiculoInput {
@@ -97,14 +156,42 @@ type HealthStatus {
   timestamp: DateTime!
 }
 
+input IniciarAlquilerInput {
+  combustibleSalida: String
+  estadoVehiculoEntrega: String
+  fechaEntregaReal: DateTime
+  kilometrajeSalida: Int
+  reservaId: Int!
+}
+
+enum MotivoBloqueoCheckout {
+  LICENCIA_VENCIDA
+  PERFIL_CLIENTE_INCOMPLETO
+  VALIDACION_DOCUMENTAL_PENDIENTE
+  VALIDACION_DOCUMENTAL_RECHAZADA
+}
+
 type Mutation {
   actualizarCategoriaVehiculo(id: Int!, input: ActualizarCategoriaInput!): CategoriaType!
   actualizarPuntoEntrega(id: Int!, input: ActualizarPuntoEntregaInput!): PuntoEntregaType!
   actualizarVehiculo(id: Int!, input: ActualizarVehiculoInput!): VehiculoType!
+  confirmarReservaPorPago(input: ConfirmarReservaPagoInput!): ReservaType!
   crearCategoriaVehiculo(input: CrearCategoriaInput!): CategoriaType!
   crearPuntoEntrega(input: CrearPuntoEntregaInput!): PuntoEntregaType!
-  crearReserva(input: CrearReservaInput!): ReservaType!
   crearVehiculo(input: CrearVehiculoInput!): VehiculoType!
+  iniciarAlquiler(input: IniciarAlquilerInput!): AlquilerType!
+  prepararCheckoutReserva(input: PrepararCheckoutReservaInput!): CheckoutReservaType!
+  registrarContratoFirmado(input: RegistrarContratoFirmadoInput!): ReservaType!
+  registrarDevolucion(input: RegistrarDevolucionInput!): AlquilerType!
+}
+
+input PrepararCheckoutReservaInput {
+  clienteId: Int!
+  fechaFin: DateTime!
+  fechaInicio: DateTime!
+  puntoDevolucionId: Int!
+  puntoRecogidaId: Int!
+  vehiculoId: Int!
 }
 
 type PuntoEntregaType {
@@ -119,6 +206,8 @@ type PuntoEntregaType {
 }
 
 type Query {
+  alquiler(id: Int!): AlquilerType!
+  alquilerPorReserva(reservaId: Int!): AlquilerType!
   categoriaVehiculo(id: Int!): CategoriaType!
   categoriasVehiculo: [CategoriaType!]!
 
@@ -131,6 +220,21 @@ type Query {
   vehiculo(id: Int!): VehiculoType!
   vehiculos: [VehiculoType!]!
   vehiculosDisponibles(input: BuscarVehiculosDisponiblesInput!): [VehiculoType!]!
+}
+
+input RegistrarContratoFirmadoInput {
+  contratoDocumentoId: String!
+  reservaId: Int!
+}
+
+input RegistrarDevolucionInput {
+  alquilerId: Int!
+  combustibleRetorno: String
+  danios: String
+  estadoVehiculoDevolucion: String
+  fechaDevolucionReal: DateTime
+  incidencias: String
+  kilometrajeRetorno: Int
 }
 
 enum ReservaEstado {

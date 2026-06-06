@@ -53,7 +53,9 @@ export class VehiculoRepository {
   findDisponibles(filter: VehiculosDisponiblesFilter) {
     return this.prisma.vehiculo.findMany({
       where: {
-        estado: VehiculoEstado.DISPONIBLE,
+        estado: {
+          notIn: [VehiculoEstado.MANTENIMIENTO, VehiculoEstado.INACTIVO],
+        },
         categoriaId: filter.categoriaId,
         reservas: {
           none: {

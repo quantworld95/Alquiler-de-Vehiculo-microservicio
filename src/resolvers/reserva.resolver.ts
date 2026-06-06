@@ -1,16 +1,34 @@
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 
-import { CrearReservaInput } from '../dto/reservas/crear-reserva.input';
+import { ConfirmarReservaPagoInput } from '../dto/reservas/confirmar-reserva-pago.input';
+import { PrepararCheckoutReservaInput } from '../dto/reservas/preparar-checkout-reserva.input';
+import { RegistrarContratoFirmadoInput } from '../dto/reservas/registrar-contrato-firmado.input';
 import { ReservaService } from '../servicios/reserva.service';
-import { ReservaType } from '../types';
+import { CheckoutReservaType, ReservaType } from '../types';
 
 @Resolver(() => ReservaType)
 export class ReservaResolver {
   constructor(private readonly reservaService: ReservaService) {}
 
+  @Mutation(() => CheckoutReservaType)
+  prepararCheckoutReserva(
+    @Args('input') input: PrepararCheckoutReservaInput,
+  ): Promise<CheckoutReservaType> {
+    return this.reservaService.prepararCheckoutReserva(input);
+  }
+
   @Mutation(() => ReservaType)
-  crearReserva(@Args('input') input: CrearReservaInput): Promise<ReservaType> {
-    return this.reservaService.crearReserva(input);
+  confirmarReservaPorPago(
+    @Args('input') input: ConfirmarReservaPagoInput,
+  ): Promise<ReservaType> {
+    return this.reservaService.confirmarReservaPorPago(input);
+  }
+
+  @Mutation(() => ReservaType)
+  registrarContratoFirmado(
+    @Args('input') input: RegistrarContratoFirmadoInput,
+  ): Promise<ReservaType> {
+    return this.reservaService.registrarContratoFirmado(input);
   }
 
   @Query(() => ReservaType)

@@ -2,7 +2,7 @@ import { Field, GraphQLISODateTime, InputType, Int } from '@nestjs/graphql';
 import { IsDate, IsInt, Min } from 'class-validator';
 
 @InputType()
-export class CrearReservaInput {
+export class PrepararCheckoutReservaInput {
   @Field(() => Int)
   @IsInt()
   @Min(1)

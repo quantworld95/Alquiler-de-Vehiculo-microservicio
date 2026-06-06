@@ -2,6 +2,7 @@ node_modules
 dist
 coverage
 *.tsbuildinfo
+src/schema.gql
 .env
 npm-debug.log*
 yarn-debug.log*
